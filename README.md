@@ -39,7 +39,7 @@ prueba_tecnica_juan_pablo_morales/
 ### Instalación
 
 ```bash
-git clone <url-del-repo>
+git clone [<url-del-repo>](https://github.com/DevJuanPa/prueba_tecnica_juan_pablo_morales_rodriguez-)
 cd prueba_tecnica_juan_pablo_morales
 pip install -r requirements.txt
 ```
