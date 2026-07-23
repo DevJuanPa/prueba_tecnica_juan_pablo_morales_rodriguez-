@@ -252,4 +252,3 @@ firma el análisis, no de la herramienta.
 ---
 
 **Autor:** Juan Pablo Morales Rodríguez
-**Contacto:** [correo] · [LinkedIn]
