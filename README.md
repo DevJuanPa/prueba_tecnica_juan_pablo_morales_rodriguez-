@@ -5,6 +5,8 @@ Análisis de 18 meses de operación (enero 2024 – junio 2025) de una cadena de
 
 **Volumen procesado:** 174,880 transacciones · 542,015 líneas de detalle · 200 SKUs · 31 proveedores
 
+**Repositorio:** https://github.com/DevJuanPa/prueba_tecnica_juan_pablo_morales_rodriguez-
+
 ---
 
 ## Estructura del repositorio
@@ -39,7 +41,7 @@ prueba_tecnica_juan_pablo_morales/
 ### Instalación
 
 ```bash
-git clone https://github.com/DevJuanPa/prueba_tecnica_juan_pablo_morales_rodriguez-
+git clone https://github.com/DevJuanPa/prueba_tecnica_juan_pablo_morales_rodriguez-.git
 cd prueba_tecnica_juan_pablo_morales
 pip install -r requirements.txt
 ```
@@ -183,6 +185,32 @@ Documento esto porque considero que es la parte más relevante de evaluar el cri
   inservible.** Aplicar la fórmula al pie de la letra da $339M. Decidí reportar la
   limitación en lugar del número, incluso sabiendo que un número grande "luce" mejor en una
   presentación ejecutiva.
+
+### Construcción y depuración del dashboard (Bloque 5)
+
+La IA generó la especificación con las medidas DAX, pero al construir el `.pbix` en Power BI
+surgieron varios errores que hubo que depurar uno por uno. Documento el proceso porque
+ilustra que la implementación no fue copiar y pegar:
+
+- **`GMV Comparable` mostraba el mismo valor para los 4 formatos.** La medida usaba
+  `ALL(Dim_Store)`, que borra el filtro de formato de la leyenda del gráfico. Se cambió por
+  `ALLEXCEPT(Dim_Store, [format], [country], [region])` para preservar esos filtros y aplicar
+  solo la regla de elegibilidad de 13 meses.
+- **La matriz de retención tiraba "Failed to move the data reader to the next row".** Causado
+  por `DATEVALUE(CohorteSel & "-01")`, que falla con configuración regional en español. Se
+  reemplazó por `DATE(VALUE(LEFT(...)), VALUE(MID(...)), 1)`, independiente del idioma.
+- **La tabla de quiebres mostraba 0 días para todos los productos.** Problema de
+  granularidad: la medida calculaba sobre un contexto más amplio que el grano tienda–producto
+  de la tabla. Se resolvió forzando el grano dentro de la medida con
+  `MAXX(SUMMARIZE(Fact_Sales, store_id, item_id), ...)`, lo que permitió además mostrar solo
+  los nombres sin exponer los IDs.
+- **El eje del Comp Sales agrupaba por año** en vez de por semana, por la jerarquía
+  automática de fechas. Se corrigió apuntando a `Dim_Date[InicioSemana]` directo y
+  desactivando el auto date/time.
+
+Las medidas finales del `.pbix` difieren de la especificación original en estos tres puntos
+(`GMV Comparable`, `Clientes Retenidos`, `Dias Sin Venta`); la spec fue el punto de partida,
+no el resultado final.
 
 ### Qué validé manualmente
 
